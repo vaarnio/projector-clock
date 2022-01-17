@@ -1,4 +1,4 @@
 import lcd
 import uasyncio
 
-uasyncio.run(lcd.run())
+#uasyncio.run(lcd.run())

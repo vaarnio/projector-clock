@@ -33,19 +33,17 @@ async def runCommon():
     #i = 0
     while(True):
         #i += 1
-        set_gpio_out(0b00000000000000000101000000000000,
+        set_gpio_out(0b00000000000000000100000000000000,
                      0b11111111111111111010111111111111)
         #await uasyncio.sleep_ms(8)
         #set_gpio_in (0b00000000000000000101000000000000,
         #             0b11111111111111111010111111111111)
         await uasyncio.sleep_ms(8)
-        set_gpio_out(0b00000000000000000000000000000000,
+        set_gpio_out(0b00000000000000000001000000000000,
                      0b11111111111111111010111111111111)
         await uasyncio.sleep_ms(8)
 
 def run():
     loop = uasyncio.get_event_loop()
-    #loop.create_task(runCommon())
-    #loop.run_forever()
-    set_gpio_out(0b00000000000000000101000000000000,
-                 0b11111111111111111010111111111111)
+    loop.create_task(runCommon())
+    loop.run_forever()
