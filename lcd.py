@@ -30,6 +30,9 @@ def set_gpio_out(value:int, mask:int):
 
 async def runCommon():
     print("com task started")
+    Pin(12, Pin.OUT).value(1)
+    Pin(14, Pin.OUT).value(1)
+
     #i = 0
     while(True):
         #i += 1
