@@ -60,7 +60,6 @@ async def runCommon():
     initPins()
     global com1
     global com2
-    setDigit(0, 2)
 
     enabled = 0b11111111111111111111111111111111
     mask    = 0b11110011111111100111111111111111 
@@ -95,8 +94,14 @@ async def runCommon():
         Pin(33, Pin.OUT).value(0)
         await uasyncio.sleep_ms(8)
 
+async def runClock():
+    while(True):
+        setDigit(0, 1)
+        await uasyncio.sleep_ms(1000)
+        setDigit(0, 2)
+
 def run():
     loop = uasyncio.get_event_loop()
     loop.create_task(runCommon())
-    #loop.create_task(runSegment())
+    loop.create_task(runClock())
     loop.run_forever()
