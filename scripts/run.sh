@@ -1,1 +1,1 @@
-repl ~ import lcd ~ lcd.run() ~ print("deploy script has run") ~
+repl ~ import clock ~ clock.run() ~ print("deploy script has run") ~

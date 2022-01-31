@@ -1,2 +1,2 @@
-rsync . /pyboard/
-repl ~ import lcd ~ lcd.run() ~ print("deploy script has run") ~
+rsync ./src /pyboard/
+repl ~ import clock ~ clock.run() ~ print("deploy script has run") ~
