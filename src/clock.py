@@ -3,26 +3,14 @@ import socket
 import network
 import ntptime
 import time
+import uasyncio
 
-def do_connect():
-    wifiFile = open('./secret/wifi', 'r')
-    wifi = wifiFile.read().split('\n')
-    sta_if = network.WLAN(network.STA_IF)
-    if not sta_if.isconnected():
-        print('connecting to network...')
-        sta_if.active(True)
-        sta_if.connect(wifi[0], wifi[1])
-        while not sta_if.isconnected():
-            pass
-    print('network config:', sta_if.ifconfig())
-
-TIMEZONE_DIFFERENCE = 1
-dst_on = False
+TIMEZONE_DIFFERENCE = 2
+dst_on = None
 
 def resolve_dst_and_set_time():
     global TIMEZONE_DIFFERENCE
     global dst_on
-    # This is most stupid thing what humans can do!
     # Rules for Finland: DST ON: March last Sunday at 03:00 + 1h, DST OFF: October last Sunday at 04:00 - 1h
     # Sets localtime to DST localtime
     if network.WLAN(network.STA_IF).config('essid') == '':
@@ -34,7 +22,7 @@ def resolve_dst_and_set_time():
 
     (year, month, mdate, hour, minute, second, wday, yday) = time.localtime(now)
 
-    if year < 2020:
+    if year < 2022:
         if DEBUG_ENABLED == 1:
             print("Time not set correctly!")
         return False
@@ -62,10 +50,29 @@ def resolve_dst_and_set_time():
             return False
     else:
         ntptime.settime()
+        print(time.localtime())
+
+def zfl(s, width):
+    # Pads the provided string with leading 0's to suit the specified 'chrs' length
+    # Force # characters, fill with leading 0's
+    return '{:0>{w}}'.format(s, w=width)
+
+async def setTime(l):
+    lastMinute = 0
+    lastSetTime = 0
+    while(True):
+        (year, month, mdate, hour, minute, second, wday, yday) = time.localtime()
+        if(minute != lastMinute):
+            timeStr = zfl(hour, 2) + zfl(minute, 2)
+            l.setOutput(timeStr)
+        if(hour == 0 and lastSetTime != time.time()):
+            resolve_dst_and_set_time()
+            lastSetTime = time.time()
+        await uasyncio.sleep_ms(1000)
 
 def run():
-    do_connect()
-    resolve_dst_and_set_time()
-    print(time.localtime())
-    #print(get_time())
-    lcd.run()
+    l = lcd.Lcd()
+    loop = uasyncio.get_event_loop()
+    loop.create_task(l.runCommon())
+    loop.create_task(setTime(l))
+    loop.run_forever()
