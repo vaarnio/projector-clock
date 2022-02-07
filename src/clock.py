@@ -59,15 +59,16 @@ def zfl(s, width):
 
 async def setTime(l):
     lastMinute = 0
-    lastSetTime = 0
+    lastDay = 0
     while(True):
         (year, month, mdate, hour, minute, second, wday, yday) = time.localtime()
         if(minute != lastMinute):
             timeStr = zfl(hour, 2) + zfl(minute, 2)
             l.setOutput(timeStr)
-        if(hour == 0 and lastSetTime != time.time()):
+        if(yday != lastDay):
             resolve_dst_and_set_time()
-            lastSetTime = time.time()
+            lastDay = yday
+            print("time synced")
         await uasyncio.sleep_ms(1000)
 
 def run():
